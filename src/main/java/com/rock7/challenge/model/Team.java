@@ -1,7 +1,11 @@
 
 package com.rock7.challenge.model;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "name",
     "serial"
 })
-public class Team {
+public class Team implements SqlObject {
 
     @JsonProperty("positions")
     private List<Position> positions = new ArrayList<Position>();
@@ -65,6 +69,15 @@ public class Team {
     @JsonProperty("serial")
     public void setSerial(Integer serial) {
         this.serial = serial;
+    }
+
+    @Override
+    public List<PreparedStatement> toSqlInsertStatements(Connection connection) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO Teams VALUES (?,?,?)");
+        preparedStatement.setInt(1, marker);
+        preparedStatement.setString(2, name);
+        preparedStatement.setInt(3, serial);
+        return Collections.singletonList(preparedStatement);
     }
 
     @Override

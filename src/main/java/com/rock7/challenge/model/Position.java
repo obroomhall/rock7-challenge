@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.util.Objects;
+import java.sql.*;
+import java.util.*;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -25,7 +26,7 @@ import java.util.Objects;
     "gpsAtMillis",
     "sogKmph"
 })
-public class Position {
+public class Position implements SqlObject {
 
     @JsonProperty("alert")
     private Boolean alert;
@@ -38,7 +39,7 @@ public class Position {
     @JsonProperty("id")
     private Integer id;
     @JsonProperty("gpsAt")
-    private String gpsAt;
+    private Timestamp gpsAt;
     @JsonProperty("sogKnots")
     private Double sogKnots;
     @JsonProperty("battery")
@@ -48,7 +49,7 @@ public class Position {
     @JsonProperty("dtfNm")
     private Double dtfNm;
     @JsonProperty("txAt")
-    private String txAt;
+    private Timestamp txAt;
     @JsonProperty("longitude")
     private Double longitude;
     @JsonProperty("latitude")
@@ -57,6 +58,9 @@ public class Position {
     private Long gpsAtMillis;
     @JsonProperty("sogKmph")
     private Double sogKmph;
+
+    @JsonProperty("teamSerial")
+    private Integer teamSerial;
 
     @JsonProperty("alert")
     public Boolean getAlert() {
@@ -109,12 +113,12 @@ public class Position {
     }
 
     @JsonProperty("gpsAt")
-    public String getGpsAt() {
+    public Timestamp getGpsAt() {
         return gpsAt;
     }
 
     @JsonProperty("gpsAt")
-    public void setGpsAt(String gpsAt) {
+    public void setGpsAt(Timestamp gpsAt) {
         this.gpsAt = gpsAt;
     }
 
@@ -159,12 +163,12 @@ public class Position {
     }
 
     @JsonProperty("txAt")
-    public String getTxAt() {
+    public Timestamp getTxAt() {
         return txAt;
     }
 
     @JsonProperty("txAt")
-    public void setTxAt(String txAt) {
+    public void setTxAt(Timestamp txAt) {
         this.txAt = txAt;
     }
 
@@ -206,6 +210,40 @@ public class Position {
     @JsonProperty("sogKmph")
     public void setSogKmph(Double sogKmph) {
         this.sogKmph = sogKmph;
+    }
+
+    @JsonProperty("teamSerial")
+    public Integer getTeamSerial() {
+        return teamSerial;
+    }
+
+    @JsonProperty("teamSerial")
+    public void setTeamSerial(Integer teamSerial) {
+        this.teamSerial = teamSerial;
+    }
+
+    @Override
+    public List<PreparedStatement> toSqlInsertStatements(Connection connection) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "INSERT INTO Positions VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+        );
+        preparedStatement.setBoolean(1, alert);
+        preparedStatement.setInt(2, altitude);
+        preparedStatement.setObject(3, type);
+        preparedStatement.setDouble(4, dtfKm);
+        preparedStatement.setInt(5, id);
+        preparedStatement.setTimestamp(6, gpsAt);
+        preparedStatement.setDouble(7, sogKnots);
+        preparedStatement.setInt(8, battery);
+        preparedStatement.setInt(9, cog);
+        preparedStatement.setDouble(10, dtfNm);
+        preparedStatement.setTimestamp(11, txAt);
+        preparedStatement.setDouble(12, longitude);
+        preparedStatement.setDouble(13, latitude);
+        preparedStatement.setLong(14, gpsAtMillis);
+        preparedStatement.setDouble(15, sogKmph);
+        preparedStatement.setInt(16, teamSerial);
+        return Collections.singletonList(preparedStatement);
     }
 
     @Override
