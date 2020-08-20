@@ -21,6 +21,34 @@ class DistanceTest {
     private static final List<StartAndEndLocation> RANDOM_LOCATIONS = generateRandomStartAndEndLocations(1000);
 
     @Test
+    public void testDistanceFindsCorrectDestination() {
+
+        Location locationA = new Location(0.2, 0.2);
+        Location locationB = new Location(-0.2, -0.2);
+
+        double distance = Distance.fromStartAndEndLocation(Distance::pythagorean, locationA, locationB);
+        System.out.println(distance);
+
+        Location destination = Distance.destinationFromLocationDistanceBearing(
+                locationA.getLatitude(),
+                locationA.getLongitude(),
+                distance,
+                225
+        );
+
+        String expectedLatitudeRounded = String.format("%.5f", locationB.getLatitude());
+        String expectedLongitudeRounded = String.format("%.5f", locationB.getLongitude());
+        System.out.println(expectedLatitudeRounded + ", " + expectedLongitudeRounded);
+
+        String calculatedLatitudeRounded = String.format("%.5f", destination.getLatitude());
+        String calculatedLongitudeRounded = String.format("%.5f", destination.getLongitude());
+        System.out.println(calculatedLatitudeRounded + ", " + calculatedLongitudeRounded);
+
+        Assertions.assertEquals(expectedLatitudeRounded, calculatedLatitudeRounded);
+        Assertions.assertEquals(expectedLongitudeRounded, calculatedLongitudeRounded);
+    }
+
+    @Test
     public void testOutputDifference62Km() {
         assertMetrePrecision(0.2, 0.2, -0.2, -0.2);
     }

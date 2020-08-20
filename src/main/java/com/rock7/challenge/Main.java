@@ -1,6 +1,5 @@
 package com.rock7.challenge;
 
-import com.rock7.challenge.math.Distance;
 import com.rock7.challenge.model.SqlObject;
 
 import java.io.IOException;
@@ -10,10 +9,18 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class Main {
+
+    private static final double FEET_ABOVE_SEA_LEVEL = 10;
+    private static final double VIEW_DISTANCE_CONSTANT = 0.5736;
+    private static final double MILES_TO_KILOMETER_CONSTANT = 1.60934;
+    private static final double MAX_VIEW_DISTANCE_KILOMETERS =
+            Math.sqrt(FEET_ABOVE_SEA_LEVEL/VIEW_DISTANCE_CONSTANT) * MILES_TO_KILOMETER_CONSTANT;
+
     public static void main(String[] args) throws SQLException, IOException {
 
-        System.out.println(Distance.haversine(36.03, -86.53, 35.98, -86.48));
-        System.out.println(Distance.pythagorean(36.03, -86.53, 35.98, -86.48));
+        System.out.println(MAX_VIEW_DISTANCE_KILOMETERS + "km viewing distance");
+
+
 
 //        Connection connection = MySqlConfig.getDefaultConnection();
 //        ObjectMapper objectMapper = new ObjectMapper();
