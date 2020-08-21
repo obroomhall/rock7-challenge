@@ -19,6 +19,7 @@ public class Moment implements SqlObject {
     private final Integer id;
     private final Double latitude;
     private final Double longitude;
+    private final Timestamp gpsAt;
     private final Long gpsAtMillis;
     private final Integer teamSerial;
 
@@ -27,13 +28,14 @@ public class Moment implements SqlObject {
     private final Double longitudeUpperVisibleBound;
     private final Double longitudeLowerVisibleBound;
 
-    public Moment(Integer id, Double latitude, Double longitude, Long gpsAtMillis, Integer teamSerial,
+    public Moment(Integer id, Double latitude, Double longitude, Timestamp gpsAt, Long gpsAtMillis, Integer teamSerial,
                   Double latitudeUpperVisibleBound, Double latitudeLowerVisibleBound, Double longitudeUpperVisibleBound,
                   Double longitudeLowerVisibleBound
     ) {
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.gpsAt = gpsAt;
         this.gpsAtMillis = gpsAtMillis;
         this.teamSerial = teamSerial;
         this.latitudeUpperVisibleBound = latitudeUpperVisibleBound;
@@ -42,14 +44,15 @@ public class Moment implements SqlObject {
         this.longitudeLowerVisibleBound = longitudeLowerVisibleBound;
     }
 
-    public static Moment fromPosition(Position position) {
+    public static Moment fromPosition(Position position, int teamSerial) {
         Bounds bounds = Distance.getUpperAndLowerVisibleBounds(position.getLatitude(), position.getLongitude());
         return new Moment(
                 position.getId(),
                 position.getLatitude(),
                 position.getLongitude(),
+                position.getGpsAt(),
                 position.getGpsAtMillis(),
-                position.getTeamSerial(),
+                teamSerial,
                 bounds.getUpperLatitudeBound(),
                 bounds.getLowerLatitudeBound(),
                 bounds.getUpperLongitudeBound(),
@@ -67,6 +70,10 @@ public class Moment implements SqlObject {
 
     public Double getLongitude() {
         return longitude;
+    }
+
+    public Timestamp getGpsAt() {
+        return gpsAt;
     }
 
     public Long getGpsAtMillis() {
@@ -96,17 +103,18 @@ public class Moment implements SqlObject {
     @Override
     public List<PreparedStatement> toSqlInsertStatements(Connection connection) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT INTO Positions VALUES (?,?,?,?,?,?,?,?,?)"
+                "INSERT INTO Moments VALUES (?,?,?,?,?,?,?,?,?,?)"
         );
         preparedStatement.setInt(1, id);
         preparedStatement.setDouble(2, latitude);
         preparedStatement.setDouble(3, longitude);
-        preparedStatement.setLong(4, gpsAtMillis);
-        preparedStatement.setInt(5, teamSerial);
-        preparedStatement.setDouble(6, latitudeUpperVisibleBound);
-        preparedStatement.setDouble(7, latitudeLowerVisibleBound);
-        preparedStatement.setDouble(8, longitudeUpperVisibleBound);
-        preparedStatement.setDouble(9, longitudeLowerVisibleBound);
+        preparedStatement.setTimestamp(4, gpsAt);
+        preparedStatement.setLong(5, gpsAtMillis);
+        preparedStatement.setInt(6, teamSerial);
+        preparedStatement.setDouble(7, latitudeUpperVisibleBound);
+        preparedStatement.setDouble(8, latitudeLowerVisibleBound);
+        preparedStatement.setDouble(9, longitudeUpperVisibleBound);
+        preparedStatement.setDouble(10, longitudeLowerVisibleBound);
         return Collections.singletonList(preparedStatement);
     }
 }

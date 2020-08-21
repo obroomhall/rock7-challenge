@@ -59,9 +59,6 @@ public class Position implements SqlObject {
     @JsonProperty("sogKmph")
     private Double sogKmph;
 
-    @JsonProperty("teamSerial")
-    private Integer teamSerial;
-
     @JsonProperty("alert")
     public Boolean getAlert() {
         return alert;
@@ -212,20 +209,10 @@ public class Position implements SqlObject {
         this.sogKmph = sogKmph;
     }
 
-    @JsonProperty("teamSerial")
-    public Integer getTeamSerial() {
-        return teamSerial;
-    }
-
-    @JsonProperty("teamSerial")
-    public void setTeamSerial(Integer teamSerial) {
-        this.teamSerial = teamSerial;
-    }
-
     @Override
     public List<PreparedStatement> toSqlInsertStatements(Connection connection) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT INTO Positions VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+                "INSERT INTO Positions VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
         );
         preparedStatement.setBoolean(1, alert);
         preparedStatement.setInt(2, altitude);
@@ -242,7 +229,6 @@ public class Position implements SqlObject {
         preparedStatement.setDouble(13, latitude);
         preparedStatement.setLong(14, gpsAtMillis);
         preparedStatement.setDouble(15, sogKmph);
-        preparedStatement.setInt(16, teamSerial);
         return Collections.singletonList(preparedStatement);
     }
 

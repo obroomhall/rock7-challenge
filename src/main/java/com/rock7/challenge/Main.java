@@ -1,7 +1,10 @@
 package com.rock7.challenge;
 
-import com.rock7.challenge.model.SqlObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rock7.challenge.config.MySqlConfig;
+import com.rock7.challenge.model.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,20 +23,18 @@ public class Main {
 
         System.out.println(MAX_VIEW_DISTANCE_KILOMETERS + "km viewing distance");
 
+        Connection connection = MySqlConfig.getDefaultConnection();
+        ObjectMapper objectMapper = new ObjectMapper();
+        Race race = objectMapper.readValue(new File("src/main/resources/positions.json"), Race.class);
 
-
-//        Connection connection = MySqlConfig.getDefaultConnection();
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        Race race = objectMapper.readValue(new File("src/main/resources/positions.json"), Race.class);
-//
-//        insertObjectToDatabase(race, connection);
-//        for (Team team : race.getTeams()) {
-//            insertObjectToDatabase(team, connection);
-//            for (Position position : team.getPositions()) {
-//                position.setTeamSerial(team.getSerial());
-//                insertObjectToDatabase(position, connection);
-//            }
-//        }
+        // insertObjectToDatabase(race, connection);
+        for (Team team : race.getTeams()) {
+            // insertObjectToDatabase(team, connection);
+            for (Position position : team.getPositions()) {
+                Moment moment = Moment.fromPosition(position, team.getSerial());
+                insertObjectToDatabase(moment, connection);
+            }
+        }
 
     }
 

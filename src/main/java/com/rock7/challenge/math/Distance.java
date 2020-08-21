@@ -54,8 +54,8 @@ public class Distance {
 
     public static Bounds getUpperAndLowerVisibleBounds(double lat, double lon) {
         return new Bounds(
-                destinationFromLocationDistanceBearing(lat, lon, MAX_VIEW_DISTANCE_KILOMETERS, 180).getLatitude(),
                 destinationFromLocationDistanceBearing(lat, lon, MAX_VIEW_DISTANCE_KILOMETERS, 0).getLatitude(),
+                destinationFromLocationDistanceBearing(lat, lon, MAX_VIEW_DISTANCE_KILOMETERS, 180).getLatitude(),
                 destinationFromLocationDistanceBearing(lat, lon, MAX_VIEW_DISTANCE_KILOMETERS, 90).getLongitude(),
                 destinationFromLocationDistanceBearing(lat, lon, MAX_VIEW_DISTANCE_KILOMETERS, 270).getLongitude()
         );
