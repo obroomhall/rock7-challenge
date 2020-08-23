@@ -1,13 +1,13 @@
 package com.rock7.challenge.model;
 
-public class Bounds {
+public class VisibleBounds {
 
     private final double upperLatitudeBound;
     private final double lowerLatitudeBound;
     private final double upperLongitudeBound;
     private final double lowerLongitudeBound;
 
-    public Bounds(double upperLatitudeBound, double lowerLatitudeBound, double upperLongitudeBound, double lowerLongitudeBound) {
+    public VisibleBounds(double upperLatitudeBound, double lowerLatitudeBound, double upperLongitudeBound, double lowerLongitudeBound) {
         this.upperLatitudeBound = upperLatitudeBound;
         this.lowerLatitudeBound = lowerLatitudeBound;
         this.upperLongitudeBound = upperLongitudeBound;

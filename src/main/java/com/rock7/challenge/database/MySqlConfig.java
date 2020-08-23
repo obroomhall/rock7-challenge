@@ -1,4 +1,4 @@
-package com.rock7.challenge.config;
+package com.rock7.challenge.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,7 +13,9 @@ public class MySqlConfig {
     private static final String timezone = "UTC";
 
     public static Connection getDefaultConnection() throws SQLException {
-        return getConnection(databaseName, timezone);
+        Connection connection = getConnection(databaseName, timezone);
+        connection.setAutoCommit(true);
+        return connection;
     }
 
     public static Connection getConnection(String databaseName, String timezone) throws SQLException {

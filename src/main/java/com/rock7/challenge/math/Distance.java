@@ -1,18 +1,22 @@
 package com.rock7.challenge.math;
 
-import com.rock7.challenge.model.Bounds;
+import com.rock7.challenge.model.VisibleBounds;
 import com.rock7.challenge.model.Location;
-import com.rock7.challenge.model.StartAndEndLocation;
 
+// algorithms converted to Java from https://www.movable-type.co.uk/scripts/latlong.html
 public class Distance {
 
-    public static final double RADIUS_OF_EARTH = 6372.8; // kilometers
+    public static final double RADIUS_OF_EARTH_KM = 6372.8; // kilometers
 
-    private static final double FEET_ABOVE_SEA_LEVEL = 10;
+    private static final double EYE_HEIGHT_ABOVE_SEA_LEVEL_FEET = 10;
     private static final double VIEW_DISTANCE_CONSTANT = 0.5736;
     private static final double MILES_TO_KILOMETER_CONSTANT = 1.60934;
-    private static final double MAX_VIEW_DISTANCE_KILOMETERS =
-            Math.sqrt(FEET_ABOVE_SEA_LEVEL/VIEW_DISTANCE_CONSTANT) * MILES_TO_KILOMETER_CONSTANT;
+    private static final double MAX_VIEW_DISTANCE_KM =
+            Math.sqrt(EYE_HEIGHT_ABOVE_SEA_LEVEL_FEET /VIEW_DISTANCE_CONSTANT) * MILES_TO_KILOMETER_CONSTANT;
+
+    public static double getMaxViewDistanceKilometers() {
+        return MAX_VIEW_DISTANCE_KM;
+    }
 
     public static double haversine(double latA, double lonA, double latB, double lonB) {
         double dLat = Math.toRadians(latB - latA);
@@ -22,18 +26,18 @@ public class Distance {
 
         double a = Math.pow(Math.sin(dLat / 2),2) + Math.pow(Math.sin(dLon / 2),2) * Math.cos(latA) * Math.cos(latB);
         double c = 2 * Math.asin(Math.sqrt(a));
-        return RADIUS_OF_EARTH * c;
+        return RADIUS_OF_EARTH_KM * c;
     }
 
     public static double pythagorean(double latA, double lonA, double latB, double lonB) {
         double x = Math.toRadians(lonB-lonA) * Math.cos(Math.toRadians(latA+latB)/2);
         double y = Math.toRadians(latB-latA);
-        return Math.sqrt(x*x + y*y) * RADIUS_OF_EARTH;
+        return Math.sqrt(x*x + y*y) * RADIUS_OF_EARTH_KM;
     }
 
-    public static Location destinationFromLocationDistanceBearing(double latA, double lonA, double distance, int degrees) {
+    public static Location findDestination(double latA, double lonA, double distance, int degrees) {
 
-        double angularDistance = distance / RADIUS_OF_EARTH;
+        double angularDistance = distance / RADIUS_OF_EARTH_KM;
         double radians = Math.toRadians(degrees);
 
         double radLatA = Math.toRadians(latA);
@@ -52,15 +56,17 @@ public class Distance {
         return Location.fromRadians(latB, lonB);
     }
 
-    public static Bounds getUpperAndLowerVisibleBounds(double lat, double lon) {
-        return new Bounds(
-                destinationFromLocationDistanceBearing(lat, lon, MAX_VIEW_DISTANCE_KILOMETERS, 0).getLatitude(),
-                destinationFromLocationDistanceBearing(lat, lon, MAX_VIEW_DISTANCE_KILOMETERS, 180).getLatitude(),
-                destinationFromLocationDistanceBearing(lat, lon, MAX_VIEW_DISTANCE_KILOMETERS, 90).getLongitude(),
-                destinationFromLocationDistanceBearing(lat, lon, MAX_VIEW_DISTANCE_KILOMETERS, 270).getLongitude()
+    // furthest visible point north, east, south, and west for approximate latitude and longitude bounds
+    public static VisibleBounds getUpperAndLowerVisibleBounds(double lat, double lon) {
+        return new VisibleBounds(
+                findDestination(lat, lon, MAX_VIEW_DISTANCE_KM, 0).getLatitude(),
+                findDestination(lat, lon, MAX_VIEW_DISTANCE_KM, 180).getLatitude(),
+                findDestination(lat, lon, MAX_VIEW_DISTANCE_KM, 90).getLongitude(),
+                findDestination(lat, lon, MAX_VIEW_DISTANCE_KM, 270).getLongitude()
         );
     }
 
+    // an interface to make swapping distance calculating algorithm easier
     @FunctionalInterface
     public interface TwoLocationsConsumer {
         double accept(double latA, double lonA, double latB, double lonB);
@@ -72,14 +78,6 @@ public class Distance {
                 locationA.getLongitude(),
                 locationB.getLatitude(),
                 locationB.getLongitude()
-        );
-    }
-
-    public static double fromStartAndEndLocation(TwoLocationsConsumer consumer, StartAndEndLocation startAndEndLocation) {
-        return fromStartAndEndLocation(
-                consumer,
-                startAndEndLocation.getStart(),
-                startAndEndLocation.getEnd()
         );
     }
 }

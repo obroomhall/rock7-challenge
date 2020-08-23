@@ -1,12 +1,11 @@
 
-package com.rock7.challenge.model;
+package com.rock7.challenge.model.parse;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Timestamp;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -26,7 +25,7 @@ import java.util.*;
     "gpsAtMillis",
     "sogKmph"
 })
-public class Position implements SqlObject {
+public class Position {
 
     @JsonProperty("alert")
     private Boolean alert;
@@ -207,76 +206,5 @@ public class Position implements SqlObject {
     @JsonProperty("sogKmph")
     public void setSogKmph(Double sogKmph) {
         this.sogKmph = sogKmph;
-    }
-
-    @Override
-    public List<PreparedStatement> toSqlInsertStatements(Connection connection) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT INTO Positions VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-        );
-        preparedStatement.setBoolean(1, alert);
-        preparedStatement.setInt(2, altitude);
-        preparedStatement.setObject(3, type);
-        preparedStatement.setDouble(4, dtfKm);
-        preparedStatement.setInt(5, id);
-        preparedStatement.setTimestamp(6, gpsAt);
-        preparedStatement.setDouble(7, sogKnots);
-        preparedStatement.setInt(8, battery);
-        preparedStatement.setInt(9, cog);
-        preparedStatement.setDouble(10, dtfNm);
-        preparedStatement.setTimestamp(11, txAt);
-        preparedStatement.setDouble(12, longitude);
-        preparedStatement.setDouble(13, latitude);
-        preparedStatement.setLong(14, gpsAtMillis);
-        preparedStatement.setDouble(15, sogKmph);
-        return Collections.singletonList(preparedStatement);
-    }
-
-    @Override
-    public String toString() {
-        return "Position{" +
-                "alert=" + alert +
-                ", altitude=" + altitude +
-                ", type='" + type + '\'' +
-                ", dtfKm=" + dtfKm +
-                ", id=" + id +
-                ", gpsAt='" + gpsAt + '\'' +
-                ", sogKnots=" + sogKnots +
-                ", battery=" + battery +
-                ", cog=" + cog +
-                ", dtfNm=" + dtfNm +
-                ", txAt='" + txAt + '\'' +
-                ", longitude=" + longitude +
-                ", latitude=" + latitude +
-                ", gpsAtMillis=" + gpsAtMillis +
-                ", sogKmph=" + sogKmph +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Position position = (Position) o;
-        return Objects.equals(alert, position.alert) &&
-                Objects.equals(altitude, position.altitude) &&
-                Objects.equals(type, position.type) &&
-                Objects.equals(dtfKm, position.dtfKm) &&
-                Objects.equals(id, position.id) &&
-                Objects.equals(gpsAt, position.gpsAt) &&
-                Objects.equals(sogKnots, position.sogKnots) &&
-                Objects.equals(battery, position.battery) &&
-                Objects.equals(cog, position.cog) &&
-                Objects.equals(dtfNm, position.dtfNm) &&
-                Objects.equals(txAt, position.txAt) &&
-                Objects.equals(longitude, position.longitude) &&
-                Objects.equals(latitude, position.latitude) &&
-                Objects.equals(gpsAtMillis, position.gpsAtMillis) &&
-                Objects.equals(sogKmph, position.sogKmph);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(alert, altitude, type, dtfKm, id, gpsAt, sogKnots, battery, cog, dtfNm, txAt, longitude, latitude, gpsAtMillis, sogKmph);
     }
 }

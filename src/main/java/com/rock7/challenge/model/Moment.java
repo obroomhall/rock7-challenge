@@ -1,20 +1,17 @@
 
 package com.rock7.challenge.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.rock7.challenge.math.Distance;
+import com.rock7.challenge.model.parse.Position;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
-public class Moment implements SqlObject {
+public class Moment {
+
+    private static final String databaseTableName = "Moments";
+    private static final Integer databaseTableColumns = 10;
 
     private final Integer id;
     private final Double latitude;
@@ -45,7 +42,7 @@ public class Moment implements SqlObject {
     }
 
     public static Moment fromPosition(Position position, int teamSerial) {
-        Bounds bounds = Distance.getUpperAndLowerVisibleBounds(position.getLatitude(), position.getLongitude());
+        VisibleBounds visibleBounds = Distance.getUpperAndLowerVisibleBounds(position.getLatitude(), position.getLongitude());
         return new Moment(
                 position.getId(),
                 position.getLatitude(),
@@ -53,10 +50,10 @@ public class Moment implements SqlObject {
                 position.getGpsAt(),
                 position.getGpsAtMillis(),
                 teamSerial,
-                bounds.getUpperLatitudeBound(),
-                bounds.getLowerLatitudeBound(),
-                bounds.getUpperLongitudeBound(),
-                bounds.getLowerLongitudeBound()
+                visibleBounds.getUpperLatitudeBound(),
+                visibleBounds.getLowerLatitudeBound(),
+                visibleBounds.getUpperLongitudeBound(),
+                visibleBounds.getLowerLongitudeBound()
         );
     }
 
@@ -100,11 +97,15 @@ public class Moment implements SqlObject {
         return longitudeLowerVisibleBound;
     }
 
-    @Override
-    public List<PreparedStatement> toSqlInsertStatements(Connection connection) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                "INSERT INTO Moments VALUES (?,?,?,?,?,?,?,?,?,?)"
-        );
+    public static String getDatabaseTableName() {
+        return databaseTableName;
+    }
+
+    public static Integer getDatabaseTableColumns() {
+        return databaseTableColumns;
+    }
+
+    public void addSqlInsertStatementToBatch(PreparedStatement preparedStatement) throws SQLException {
         preparedStatement.setInt(1, id);
         preparedStatement.setDouble(2, latitude);
         preparedStatement.setDouble(3, longitude);
@@ -115,6 +116,7 @@ public class Moment implements SqlObject {
         preparedStatement.setDouble(8, latitudeLowerVisibleBound);
         preparedStatement.setDouble(9, longitudeUpperVisibleBound);
         preparedStatement.setDouble(10, longitudeLowerVisibleBound);
-        return Collections.singletonList(preparedStatement);
+        preparedStatement.addBatch();
+        preparedStatement.clearParameters();
     }
 }

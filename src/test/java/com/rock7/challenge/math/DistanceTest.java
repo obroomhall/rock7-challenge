@@ -1,7 +1,6 @@
 package com.rock7.challenge.math;
 
 import com.rock7.challenge.model.Location;
-import com.rock7.challenge.model.StartAndEndLocation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -13,12 +12,12 @@ import java.util.Random;
 
 /**
  * Proves that the Pythagorean algorithm is (about 6 times) faster than the Haversine algorithm, and both output the
- * same distance to within a metre, up to at least 60 kilometers.
+ * same distance to within a metre, up to at least 60 kilometers. Tests were validated using external tools.
  */
 class DistanceTest {
 
     private static final Random RANDOM = new Random();
-    private static final List<StartAndEndLocation> RANDOM_LOCATIONS = generateRandomStartAndEndLocations(1000);
+    private static final List<Location[]> RANDOM_LOCATIONS = generateRandomStartAndEndLocations(1000);
 
     @Test
     public void testDistanceFindsCorrectDestination() {
@@ -29,7 +28,7 @@ class DistanceTest {
         double distance = Distance.fromStartAndEndLocation(Distance::pythagorean, locationA, locationB);
         System.out.println(distance);
 
-        Location destination = Distance.destinationFromLocationDistanceBearing(
+        Location destination = Distance.findDestination(
                 locationA.getLatitude(),
                 locationA.getLongitude(),
                 distance,
@@ -73,7 +72,7 @@ class DistanceTest {
         assertMetrePrecision(0.003, 0.003, -0.003, -0.003);
     }
 
-    // asserts that the difference in formulae output is at most 1 metre
+    // asserts that the difference in algorithm output is at most 1 metre
     private void assertMetrePrecision(double latA, double lonA, double latB, double lonB) {
 
         double haversine = Distance.haversine(latA, lonA, latB, lonB);
@@ -108,10 +107,10 @@ class DistanceTest {
 
     private List<Long> doRepeatingDistanceTest(Distance.TwoLocationsConsumer consumer) {
         List<Long> executionTimes = new ArrayList<>();
-        for (StartAndEndLocation startAndEndLocation : RANDOM_LOCATIONS) {
+        for (Location[] startAndEndLocation : RANDOM_LOCATIONS) {
             Instant start = Instant.now();
             for (int i = 0; i < 1000; i++) {
-                Distance.fromStartAndEndLocation(consumer, startAndEndLocation);
+                Distance.fromStartAndEndLocation(consumer, startAndEndLocation[0], startAndEndLocation[1]);
             }
             Instant end = Instant.now();
             executionTimes.add(Duration.between(start, end).toMillis());
@@ -119,10 +118,10 @@ class DistanceTest {
         return executionTimes;
     }
 
-    private static List<StartAndEndLocation> generateRandomStartAndEndLocations(int count) {
-        List<StartAndEndLocation> latLongsList = new ArrayList<>();
+    private static List<Location[]> generateRandomStartAndEndLocations(int count) {
+        List<Location[]> latLongsList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            latLongsList.add(new StartAndEndLocation(generateRandomLatLong(), generateRandomLatLong()));
+            latLongsList.add(new Location[] { generateRandomLatLong(), generateRandomLatLong() });
         }
         return latLongsList;
     }

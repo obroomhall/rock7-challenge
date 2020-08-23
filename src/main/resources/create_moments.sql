@@ -1,4 +1,4 @@
-CREATE TABLE Moments (
+CREATE TABLE IF NOT EXISTS Moments (
     id int,
     latitude decimal(8, 5),
     longitude decimal(8, 5),

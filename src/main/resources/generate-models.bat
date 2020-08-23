@@ -1,1 +1,0 @@
-jsonschema2pojo --source .\positions.json --target ..\java --source-type JSON --omit-tostring --omit-hashcode-and-equals --target-version 1.8 --annotation-style JACKSON2 --package com.rock7.challenge.model
