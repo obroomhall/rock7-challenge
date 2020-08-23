@@ -34,12 +34,14 @@ Outputting the averages becomes a simple task after the aforementioned preproces
 This method improves on the naive method in two ways, however it requires further processing:
 
 **Removing false positive sightings**
+
 False positives are sightings within the approximate square of visibility, but outside of the real circle of visibility. To remove these from the results set requires using the distance algorithm again.
 
 **Count multiple sightings per team per day**
+
 Previously we assumed a single sighting per team per day, but this can be considered incorrect. Instead I implemented a method that separates sightings by a threshold. I tested a range of thresholds, the results from which can be seen in the table below.
 
-### Conclusion of Method
+### Conclusion
 I have presented two methods, usage of which would depend on the more valued factor; speed or precision.
 
 ## 4. Output
@@ -79,7 +81,7 @@ I have presented two methods, usage of which would depend on the more valued fac
 | 2017-12-19 	|  5.00  	| 5.00   	|  5.00  	|  5.00  	|  2.00  	|  1.00  	|  1.00  	|  1.00  	|
 
 ## Extra Findings
-# Ranges of Visibility
+### Ranges of Visibility
 With a constant eye level, the visible distance to the horizon remains constant. Something interesting that I found is that the distances between latitude degrees were unchanging, however the distances between longitude degrees were variable. The tables below show the min, max, and average for how the visible ranges for latitide and longitude changed throughout the race.
 
 | latitudeRangeMax  | latitudeRangeMin  | latitudeRangeAvg  |
